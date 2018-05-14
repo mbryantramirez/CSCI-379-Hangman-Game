@@ -32,9 +32,9 @@ def main():
             # TCP loop
             while True:
                 # Continuously Read in from TCP port
-
+                 message = conn.recv(port).decode()
                 # Keep listening if it doesn't receive a hello message
-
+                if message == "hello":break
                 # Extract username handling empty case
 
                 # Create and bind a UDP socket, letting the OS choose the port number
