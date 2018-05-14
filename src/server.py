@@ -3,109 +3,97 @@ from sys import argv
 from random import *
 from game import *
 
+
 def main():
-  # Parse command line args
-  if len(argv) != 2:
-    print("usage: python3 server.py <word to guess or '-r' for random word>")
-    return 1
+    # Parse command line args
+    if len(argv) != 2:
+        print("usage: python3 server.py <word to guess or '-r' for random word>")
+        return 1
 
-  print("Server is running...")
+    print("Server is running...")
 
-  # Create the TCP Socket
-  print("Creating TCP socket...")
+    # Create the TCP Socket
+    print("Creating TCP socket...")
+    server_sock = socket(AF_INET, SOCK_STREAM)
+    # Bind a port to the TCP socket, letting the OS choose the port number
+    server_sock.bind(('', 0))
+    # Get the port number of the socket from the OS and print it
+    port = server_sock.getsockname()[1]
+    # The port number will be a command-line parameter to the client program
+    # Configure the TCP socket (using listen) to accept a connection request
+    server_sock.listen(5)
 
-  # Bind a port to the TCP socket, letting the OS choose the port number
+    try:  # try/except to catch ctrl-c
+        while True:
+            # Accept the TCP Connection
+            print("Waiting for a client...")
+            conn, addr = server_sock.accept()
 
-  # Get the port number of the socket from the OS and print it
-  # The port number will be a command-line parameter to the client program
+            # TCP loop
+            while True:
+                # Continuously Read in from TCP port
 
+                # Keep listening if it doesn't receive a hello message
 
-  # Configure the TCP socket (using listen) to accept a connection request
+                # Extract username handling empty case
 
-  try: # try/except to catch ctrl-c
-    while True:
-      # Accept the TCP Connection
-      print("Waiting for a client...")
+                # Create and bind a UDP socket, letting the OS choose the port number
+                print("Creating UDP socket...")
 
+                # Add a timeout to the UDP socket so that it stops listening
+                # after 2 minutes of inactivity
 
-      # TCP loop
-      while True:
-        # Continuously Read in from TCP port
+                # Get the port number assigned by the OS and print to console
 
+                # Put the UDP port number in a message and send it to the client using TCP
+                print("Sending UDP port number to client using TCP connection...")
 
-        # Keep listening if it doesn't receive a hello message
+                # Break from loop once needed info is received
 
+            active = False  # game not active by default
 
-        # Extract username handling empty case
+            # Game (UDP) loop
+            while True:
+                try:
+                # receive on UDP port here
 
+                except timeout:  # catch UDP timeout
+                    print("Ending game due to timeout...")
+                    break  # break and wait to accept another client
 
+                # if ...:
+                #   #Game setup
+                #   active = True
+                #   word, word_blanks, attempts, win = gameSetup(argv)
+                #   print("Hidden Word: {}".format(word))
+                #   print("Starting game...")
 
-        # Create and bind a UDP socket, letting the OS choose the port number
-        print("Creating UDP socket...")
+                #   #Send inst then stat messages
 
+                # elif ...:
 
-        # Add a timeout to the UDP socket so that it stops listening
-        # after 2 minutes of inactivity
+                #   word_blanks, attempts, win = checkGuess(word, word_blanks, attempts, guess, win)
 
-        # Get the port number assigned by the OS and print to console
+                #   #Losing conditions - break if end
+                #   if len(guess) > 1 and not win or attempts == 0 or win:
+                #     #Handle win/lose conditions
+                #     active = False
+                #   else:
 
+                # always send a response message to the client
 
-        # Put the UDP port number in a message and send it to the client using TCP
-        print("Sending UDP port number to client using TCP connection...")
+            # end of UDP Game loop
+            # close the TCP socket the client was using as well as the udp socket.
 
+        # end of TCP loop
 
-        # Break from loop once needed info is received
+    except KeyboardInterrupt:
 
-      active = False # game not active by default
-
-      # Game (UDP) loop
-      while True:
-        try:
-          # receive on UDP port here
-
-
-        except timeout: # catch UDP timeout
-          print("Ending game due to timeout...")
-          break # break and wait to accept another client
-
-
-        # if ...:
-        #   #Game setup
-        #   active = True
-        #   word, word_blanks, attempts, win = gameSetup(argv)
-        #   print("Hidden Word: {}".format(word))
-        #   print("Starting game...")
-
-        #   #Send inst then stat messages
-
-
-        # elif ...:
-
-        #   word_blanks, attempts, win = checkGuess(word, word_blanks, attempts, guess, win)
-
-        #   #Losing conditions - break if end
-        #   if len(guess) > 1 and not win or attempts == 0 or win:
-        #     #Handle win/lose conditions
-        #     active = False
-        #   else:
-
-
-        # always send a response message to the client
-
-
-      # end of UDP Game loop
-      # close the TCP socket the client was using as well as the udp socket.
-
-
-    # end of TCP loop
-
-  except KeyboardInterrupt:
-
-    # Close sockets
-    print("Closing TCP and UDP sockets...")
+        # Close sockets
+        print("Closing TCP and UDP sockets...")
 
 
 ###########################################
 
 if __name__ == "__main__":
-  main()
+    main()
