@@ -32,11 +32,17 @@ def main():
             # TCP loop
             while True:
                 # Continuously Read in from TCP port
-                 message = conn.recv(port).decode()
+                message = conn.recv(port)
                 # Keep listening if it doesn't receive a hello message
-                if message == "hello":break
+                if not data:
+                    print('waiting for message')
                 # Extract username handling empty case
-
+                first, *middle, tail = message.split()
+                if tail == 'im':
+                    username = ''
+                else:
+                    username = tail
+                print(username)
                 # Create and bind a UDP socket, letting the OS choose the port number
                 print("Creating UDP socket...")
 
@@ -61,31 +67,31 @@ def main():
                     print("Ending game due to timeout...")
                     break  # break and wait to accept another client
 
-                # if ...:
-                #   #Game setup
-                #   active = True
-                #   word, word_blanks, attempts, win = gameSetup(argv)
-                #   print("Hidden Word: {}".format(word))
-                #   print("Starting game...")
+                    # if ...:
+                    #   #Game setup
+                    #   active = True
+                    #   word, word_blanks, attempts, win = gameSetup(argv)
+                    #   print("Hidden Word: {}".format(word))
+                    #   print("Starting game...")
 
-                #   #Send inst then stat messages
+                    #   #Send inst then stat messages
 
-                # elif ...:
+                    # elif ...:
 
-                #   word_blanks, attempts, win = checkGuess(word, word_blanks, attempts, guess, win)
+                    #   word_blanks, attempts, win = checkGuess(word, word_blanks, attempts, guess, win)
 
-                #   #Losing conditions - break if end
-                #   if len(guess) > 1 and not win or attempts == 0 or win:
-                #     #Handle win/lose conditions
-                #     active = False
-                #   else:
+                    #   #Losing conditions - break if end
+                    #   if len(guess) > 1 and not win or attempts == 0 or win:
+                    #     #Handle win/lose conditions
+                    #     active = False
+                    #   else:
 
-                # always send a response message to the client
+                    # always send a response message to the client
 
-            # end of UDP Game loop
-            # close the TCP socket the client was using as well as the udp socket.
+                    # end of UDP Game loop
+                    # close the TCP socket the client was using as well as the udp socket.
 
-        # end of TCP loop
+                    # end of TCP loop
 
     except KeyboardInterrupt:
 

@@ -22,7 +22,7 @@ def main():
     # Connect to the server program
     sock.connect((hostname, serverTCPPort))
     # Send hello message to the server over TCP connection
-    message = "Hello my name is " + name
+    message = "Hello im" + name
     sock.send(message)
     # TCP Loop
     # while True:
