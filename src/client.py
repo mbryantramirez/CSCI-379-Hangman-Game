@@ -26,23 +26,29 @@ def main():
     sock.send(message)
     # TCP Loop
     # while True:
+    while True:
     # Read in from TCP port
-
+        data = sock.recv(1024)
     # Keep listening if it doesn't receive a portUDP message
-
+        if not data:
+            print('Waiting for message')
+        else:
+            tcpsevermessage = data.decode()
     # Read the control message from the TCP socket and print its contents
-
+            print(tcpsevermessage)
     # Break from loop once needed info is received
-
+        break
     # Create a UDP socket
+    udpsock = socket(AF_INET,SOCK_DGRAM)
 
     end = False  # default end flag
 
     # Game loop
     while True:
         # Prompt
-
+        print('Here are some valid commands for the game')
         valid_commands = ['start', 'end', 'guess', 'exit']
+        print(valid_commands)
 
         # UDP loop
         while True:

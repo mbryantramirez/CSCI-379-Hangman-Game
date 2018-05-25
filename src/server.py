@@ -45,15 +45,18 @@ def main():
                 print(username)
                 # Create and bind a UDP socket, letting the OS choose the port number
                 print("Creating UDP socket...")
-
+                serverSocket = socket(AF_INET,SOCK_DGRAM)
+                serverSocket.bind(('',0))
                 # Add a timeout to the UDP socket so that it stops listening
+                serverSocket.settimeout(120)
                 # after 2 minutes of inactivity
 
                 # Get the port number assigned by the OS and print to console
-
+                print('listening on port', serverSocket.getsockname()[1] )
                 # Put the UDP port number in a message and send it to the client using TCP
                 print("Sending UDP port number to client using TCP connection...")
 
+                conn.send(serverSocket.getsockname()[1])
                 # Break from loop once needed info is received
 
             active = False  # game not active by default
