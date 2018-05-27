@@ -43,31 +43,30 @@ def main():
     udpgamesock.bind(('', portUDPmessage))
 
 
-end = False  # default end flag
+    end = False  # default end flag
 
 # Game loop
-while True:
+    while True:
     # Prompt
-    print(" 'This is hangman. You will guess one letter at a time. If the letter is in the hidden word, the "-" will be replaced by the correct letter. Guessing multiple letters at a time will be considered as guessing the entire word (which will result in either a win or loss automatically - win if correct, loss if incorrect). You win if you either guess all of the correct letters or guess the word correctly. You lose if you run out of attempts. Attempts will be decremented in the case of an incorrect or repeated letter guess.' " )
-    valid_commands = ['start', 'end', 'guess', 'exit']
-    print(valid_commands)
+        valid_commands = ['start', 'end', 'guess', 'exit']
+        command = input("Valid commands are: " + ' '.join(valid_commands))
 
     # UDP loop
-    while True:
+        while True:
         # Continuously Read in from UDP port
-        gamedata, addr = udpgamesock.recvfrom(1024)
+         gamedata, addr = udpgamesock.recvfrom(1024)
 
-        valid_msg_types = ["instr", "stat", "end", "na", "bye"]
+         valid_msg_types = ["instr", "stat", "end", "na", "bye"]
         # print message
-        print(gamedata)
+         print(gamedata)
         # Instruction message should be followed by stat message
 
         # Break once receiving info and reprompt user
-    # end of UDP loop
+        # end of UDP loop
 
-    # If end message received, end client process
-    if end:
-        break
+        # If end message received, end client process
+         if gamedata == 'end':
+            break
 # end of Game loop
 
 # Close sockets
@@ -77,5 +76,3 @@ print("Closing TCP and UDP sockets...")
 
 if __name__ == "__main__":
     main()
-
-

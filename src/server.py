@@ -34,53 +34,61 @@ def main():
                 # Continuously Read in from TCP port
                 message = conn.recv(port)
                 # Keep listening if it doesn't receive a hello message
-                if not data:
+                if not message:
                     print('waiting for message')
                 # Extract username handling empty case
-                first, *middle, tail = message.split()
-                if tail == 'im':
-                    username = ''
                 else:
-                    username = tail
-                print('A new client is connected to server!')
-                print('User name:' + username)
-                # Create and bind a UDP socket, letting the OS choose the port number
-                print("Creating UDP socket...")
-                serverSocket = socket(AF_INET, SOCK_DGRAM)
-                serverSocket.bind(('', 0))
-                # Add a timeout to the UDP socket so that it stops listening
-                randomUDPport = serverSocket.getsockname()[1]
-                print('UDP socket has port number ' + randomUDPport)
-                serverSocket.settimeout(2)
-                # after 2 minutes of inactivity
-                # Get the port number assigned by the OS and print to console
-                # Put the UDP port number in a message and send it to the client using TCP
-                print("Sending UDP port number to client using TCP connection...")
-                conn.send(randomUDPport)
-                # Break from loop once needed info is received
-
-        active = False  # game not active by default
-
+                    first, *middle, tail = message.split()
+                    if tail == 'im':
+                        username = ''
+                    else:
+                        username = tail
+                    print('A new client is connected to server!')
+                    print('User name:' + username)
+                    # Create and bind a UDP socket, letting the OS choose the port number
+                    print("Creating UDP socket...")
+                    serverSocket = socket(AF_INET, SOCK_DGRAM)
+                    serverSocket.bind(('', 0))
+                    # Add a timeout to the UDP socket so that it stops listening
+                    randomUDPport = serverSocket.getsockname()[1]
+                    print('UDP socket has port number ' + randomUDPport)
+                    serverSocket.settimeout(2)
+                    # after 2 minutes of inactivity
+                    # Get the port number assigned by the OS and print to console
+                    # Put the UDP port number in a message and send it to the client using TCP
+                    print("Sending UDP port number to client using TCP connection...")
+                    conn.send(randomUDPport)
+                    # Break from loop once needed info is received
+                    break
+            active = False  # game not active by default
         # Game (UDP) loop
-        while True:
-            try:
+            while True:
+             try:
                 # receive on UDP port here
                 udpgamedata, udpgameaddr = serverSocket.recvfrom(1024)
-            except socket.timeout:
+             except socket.timeout:
                 # catch UDP timeout
                 print("Ending game due to timeout...")
                 break  # break and wait to accept another client
 
-            if
-        # if ...:
-        #   #Game setup
-        #   active = True
-        #   word, word_blanks, attempts, win = gameSetup(argv)
-        #   print("Hidden Word: {}".format(word))
-        #   print("Starting game...")
-
-        #   #Send inst then stat messages
-
+             if udpgamedata == 'start':
+                # Game setup
+                #   active = True
+                active = True
+                # word, word_blanks, attempts, win = gameSetup(argv)
+                word, word_blanks, attempts, win = gameSetup(argv)
+                #   print("Hidden Word: {}".format(word))
+                print("Hidden Word: {}".format(word))
+                #   print("Starting game...")
+                print("Starting game...")
+                #   #Send inst then stat messages
+                startInstructions = " 'This is hangman. You will guess one letter at a time. If the letter is in the hidden word, the  -  will be replaced by the correct letter. Guessing multiple letters at a time will be considered as guessing the entire word (which will result in either a win or loss automatically - win if correct, loss if incorrect). You win if you either guess all of the correct letters or guess the word correctly. You lose if you run out of attempts. Attempts will be decremented in the case of an incorrect or repeated letter guess.' "
+                conn.send(startInstructions)
+                stat =   " 'Word: ---- Attempts left: 5' "
+                conn.send(stat)
+             elif udpgamedata == 'guess':
+                 break
+            break
         # elif ...:
 
         #   word_blanks, attempts, win = checkGuess(word, word_blanks, attempts, guess, win)
