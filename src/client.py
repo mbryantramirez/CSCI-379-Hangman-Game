@@ -18,7 +18,7 @@ def main():
     sock = socket(AF_INET, SOCK_STREAM)
     # Get IP address of server via DNS and print it(optional)
     addr = gethostbyname(hostname)
-    print (addr)
+    print(addr)
     # Connect to the server program
     sock.connect((hostname, serverTCPPort))
     # Send hello message to the server over TCP connection
@@ -27,52 +27,55 @@ def main():
     # TCP Loop
     # while True:
     while True:
-    # Read in from TCP port
+        # Read in from TCP port
         data = sock.recv(1024)
-    # Keep listening if it doesn't receive a portUDP message
+        # Keep listening if it doesn't receive a portUDP message
         if not data:
             print('Waiting for message')
         else:
-            tcpsevermessage = data.decode()
-    # Read the control message from the TCP socket and print its contents
-            print(tcpsevermessage)
-    # Break from loop once needed info is received
+            portUDPmessage = data.decode()
+            # Read the control message from the TCP socket and print its contents
+            print(portUDPmessage)
+        # Break from loop once needed info is received
         break
     # Create a UDP socket
-    udpsock = socket(AF_INET,SOCK_DGRAM)
+    udpgamesock = socket(AF_INET, SOCK_DGRAM)
+    udpgamesock.bind(('', portUDPmessage))
 
-    end = False  # default end flag
 
-    # Game loop
+end = False  # default end flag
+
+# Game loop
+while True:
+    # Prompt
+    print(" 'This is hangman. You will guess one letter at a time. If the letter is in the hidden word, the "-" will be replaced by the correct letter. Guessing multiple letters at a time will be considered as guessing the entire word (which will result in either a win or loss automatically - win if correct, loss if incorrect). You win if you either guess all of the correct letters or guess the word correctly. You lose if you run out of attempts. Attempts will be decremented in the case of an incorrect or repeated letter guess.' " )
+    valid_commands = ['start', 'end', 'guess', 'exit']
+    print(valid_commands)
+
+    # UDP loop
     while True:
-        # Prompt
-        print('Here are some valid commands for the game')
-        valid_commands = ['start', 'end', 'guess', 'exit']
-        print(valid_commands)
+        # Continuously Read in from UDP port
+        gamedata, addr = udpgamesock.recvfrom(1024)
 
-        # UDP loop
-        while True:
-            # Continuously Read in from UDP port
+        valid_msg_types = ["instr", "stat", "end", "na", "bye"]
+        # print message
+        print(gamedata)
+        # Instruction message should be followed by stat message
 
-            valid_msg_types = ["instr", "stat", "end", "na", "bye"]
+        # Break once receiving info and reprompt user
+    # end of UDP loop
 
-            # print message
+    # If end message received, end client process
+    if end:
+        break
+# end of Game loop
 
-            # Instruction message should be followed by stat message
-
-            # Break once receiving info and reprompt user
-        # end of UDP loop
-
-        # If end message received, end client process
-        if end:
-            break
-    # end of Game loop
-
-    # Close sockets
-    print("Closing TCP and UDP sockets...")
-
+# Close sockets
+print("Closing TCP and UDP sockets...")
 
 ###########################################
 
 if __name__ == "__main__":
     main()
+
+
