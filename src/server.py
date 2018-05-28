@@ -1,11 +1,12 @@
 from socket import *
 from sys import argv
-
-from game import *
+from src.game import *
+from random import *
 
 
 def main():
     # Parse command line args
+    word = word_blanks = attempts = guess = win = ' '
     if len(argv) != 2:
         print("usage: python3 server.py <word to guess or '-r' for random word>")
         return 1
@@ -61,55 +62,59 @@ def main():
                     # Break from loop once needed info is received
                     break
             active = False  # game not active by default
-        # Game (UDP) loop
+            # Game (UDP) loop
             while True:
-             try:
-                # receive on UDP port here
-                udpgamedata, udpgameaddr = serverSocket.recvfrom(1024)
-             except socket.timeout:
-                # catch UDP timeout
-                print("Ending game due to timeout...")
-                break  # break and wait to accept another client
+                try:
+                    # receive on UDP port here
+                    udpgamedata, udpgameaddr = serverSocket.recvfrom(1024)
+                except socket.timeout:
+                    # catch UDP timeout
+                    print("Ending game due to timeout...")
+                    break  # break and wait to accept another client
+                if udpgamedata == 'start':
+                    # Game setup
+                    #   active = True
+                    active = True
+                    # word, word_blanks, attempts, win = gameSetup(argv)
+                    word, word_blanks, attempts, win = gameSetup(argv)
+                    #   print("Hidden Word: {}".format(word))
+                    print("Hidden Word: {}".format(word))
+                    #   print("Starting game...")
+                    print("Starting game...")
+                    #   #Send inst then stat messages
+                    conn.send(INSTRUCTIONS)
+                    stat = 'Word: ' + word_blanks + ' Attempts left: ' + attempts
+                    conn.send(stat)
+                    # elif ...:
+                elif udpgamedata == 'guess':
+                    guess = udpgamedata.split()[1]
+                    #   word_blanks, attempts, win = checkGuess(word, word_blanks, attempts, guess, win)
+                    word_blanks, attempts, win = checkGuess(word, word_blanks, attempts, guess, win)
+                    #   #Losing conditions - break if end
+                    #   if len(guess) > 1 and not win or attempts == 0 or win:
+                    if len(guess) > 1 and not win or attempts == 0 or win:
+                        sendinglossmessage = 'end You lose! word was: '+ word
+                        conn.send(sendinglossmessage)
+                        active = False
+                    #   else:
+                    else:
+                        sendingwinmessage = 'You win! Word was also'
+                        conn.send(sendingwinmessage)
+                # always send a response message to the client
+                # end of UDP Game loop
+                break
+                # close the TCP socket the client was using as well as the udp socket.
 
-             if udpgamedata == 'start':
-                # Game setup
-                #   active = True
-                active = True
-                # word, word_blanks, attempts, win = gameSetup(argv)
-                word, word_blanks, attempts, win = gameSetup(argv)
-                #   print("Hidden Word: {}".format(word))
-                print("Hidden Word: {}".format(word))
-                #   print("Starting game...")
-                print("Starting game...")
-                #   #Send inst then stat messages
-                startInstructions = " 'This is hangman. You will guess one letter at a time. If the letter is in the hidden word, the  -  will be replaced by the correct letter. Guessing multiple letters at a time will be considered as guessing the entire word (which will result in either a win or loss automatically - win if correct, loss if incorrect). You win if you either guess all of the correct letters or guess the word correctly. You lose if you run out of attempts. Attempts will be decremented in the case of an incorrect or repeated letter guess.' "
-                conn.send(startInstructions)
-                stat =   " 'Word: ---- Attempts left: 5' "
-                conn.send(stat)
-             elif udpgamedata == 'guess':
-                 break
+            serverSocket.close()
+            server_sock.close()
+                # end of TCP loop
             break
-        # elif ...:
 
-        #   word_blanks, attempts, win = checkGuess(word, word_blanks, attempts, guess, win)
-
-        #   #Losing conditions - break if end
-        #   if len(guess) > 1 and not win or attempts == 0 or win:
-        #     #Handle win/lose conditions
-        #     active = False
-        #   else:
-
-        # always send a response message to the client
-
-        # end of UDP Game loop
-        # close the TCP socket the client was using as well as the udp socket.
-
-        # end of TCP loop
-
-except KeyboardInterrupt:
-
-# Close sockets
-print("Closing TCP and UDP sockets...")
+    except KeyboardInterrupt:
+        # Close sockets
+        serverSocket.close()
+        server_sock.close()
+        print("Closing TCP and UDP sockets...")
 
 ###########################################
 

@@ -42,31 +42,38 @@ def main():
     udpgamesock = socket(AF_INET, SOCK_DGRAM)
     udpgamesock.bind(('', portUDPmessage))
 
-
     end = False  # default end flag
 
-# Game loop
+    # Game loop
     while True:
-    # Prompt
+        # Prompt
         valid_commands = ['start', 'end', 'guess', 'exit']
         command = input("Valid commands are: " + ' '.join(valid_commands))
 
-    # UDP loop
+        # UDP loop
         while True:
-        # Continuously Read in from UDP port
-         gamedata, addr = udpgamesock.recvfrom(1024)
-
-         valid_msg_types = ["instr", "stat", "end", "na", "bye"]
-        # print message
-         print(gamedata)
+            # Continuously Read in from UDP port
+            gamedata, addr = udpgamesock.recvfrom(1024)
+            valid_msg_types = ["instr", "stat", "end", "na", "bye"]
+            # print message
+            print(gamedata)
         # Instruction message should be followed by stat message
-
-        # Break once receiving info and reprompt user
-        # end of UDP loop
-
-        # If end message received, end client process
-         if gamedata == 'end':
+            if gamedata == "instr":
+                print(gamedata)
+            elif gamedata == "stat":
+                print(gamedata)
+            # Break once receiving info and reprompt user
+            # end of UDP loop
+            elif gamedata == "na":
+                print(gamedata)
+            elif gamedata == "bye":
+                print(gamedata)
+            # If end message received, end client process
+            elif gamedata == 'end':
+                print(gamedata)
             break
+
+
 # end of Game loop
 
 # Close sockets
